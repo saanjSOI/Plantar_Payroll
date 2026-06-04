@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Palantir Payroll</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     CONFIGURATION — EDIT THIS SECTION ONLY
+     Replace the URL below with your Google Doc link.
+     Make sure your Google Doc is set to "Anyone with the link
+     can VIEW" (not edit) before publishing.
+  ============================================================ */
+
+  /* ============================================================ */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #C0392B;
+    --red-light: #FDECEA;
+    --red-dark: #922B21;
+    --blue: #1A4D8F;
+    --blue-light: #EAF0FB;
+    --green: #1E6B45;
+    --green-light: #E6F5ED;
+    --amber: #7D4E00;
+    --amber-light: #FFF8E1;
+    --ink: #1A1A1A;
+    --ink-mid: #555;
+    --ink-light: #888;
+    --border: #D8D5CF;
+    --bg: #FAF8F4;
+    --surface: #FFFFFF;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .hero {
+    background: var(--ink);
+    color: #fff;
+    padding: 3rem 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: rgba(192,57,43,0.15);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 12px;
+    font-weight: 400;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 em {
+    color: #E57373;
+    font-style: italic;
+  }
+
+  .hero-sub {
+    font-size: 15px;
+    color: rgba(255,255,255,0.65);
+    max-width: 560px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stat-cell {
+    background: var(--surface);
+    padding: 1.2rem 1.5rem;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    color: var(--ink);
+    display: block;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-val.danger { color: var(--red); }
+
+  .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-light);
+    font-weight: 400;
+  }
+
+  .main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .search-section {
+    margin-bottom: 2rem;
+  }
+
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-light);
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+
+  .zip-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .zip-row input {
+    width: 160px;
+    flex: none;
+  }
+
+  .zip-status {
+    font-size: 13px;
+    color: var(--ink-light);
+    align-self: center;
+    flex: 1;
+  }
+
+  .zip-status.found { color: var(--green); font-weight: 500; }
+  .zip-status.error { color: var(--red); }
+
+  .search-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .search-row input {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  input[type="text"], select {
+    font-family: var(--sans);
+    font-size: 14px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input[type="text"]:focus, select:focus {
+    border-color: var(--ink);
+  }
+
+  select { cursor: pointer; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.25rem 0;
+  }
+
+  .filter-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-btn {
+    font-family: var(--sans);
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--ink-mid);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 400;
+  }
+
+  .filter-btn:hover { border-color: var(--ink-mid); color: var(--ink); }
+  .filter-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .results-meta {
+    font-size: 12px;
+    color: var(--ink-light);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .card:hover { border-color: #aaa; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+  .card-info { flex: 1; min-width: 180px; }
+
+  .card-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .badge.R { background: var(--red-light); color: var(--red-dark); }
+  .badge.D { background: var(--blue-light); color: var(--blue); }
+  .badge.returned { background: var(--green-light); color: var(--green); }
+
+  .card-state {
+    font-size: 12px;
+    color: var(--ink-light);
+  }
+
+  .card-amount {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-weight: 400;
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+
+  .card-amount.high { color: var(--red); }
+  .card-amount.mid { color: var(--amber); }
+  .card-amount.low { color: var(--ink-mid); }
+
+  .card-returned-label {
+    font-size: 12px;
+    color: var(--ink-light);
+    margin-right: 8px;
+    font-style: italic;
+  }
+
+  .action-btn {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--red);
+    background: transparent;
+    color: var(--red);
+    cursor: pointer;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .action-btn:hover { background: var(--red); color: #fff; }
+
+  .empty {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: var(--ink-light);
+    font-size: 14px;
+  }
+
+  .source-note {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--ink-light);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 600px) {
+    .hero { padding: 2rem 1.25rem 2rem; }
+    .card { gap: 8px; }
+    .card-amount { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     OWNER CONFIGURATION — EDIT THIS SECTION ONLY
+     1. Replace the Google Doc URL below with your own.
+     2. Make sure your Doc sharing is set to "Viewer" not "Editor"
+     so the public can read but not change the letter.
+============================================================ -->
+<script>
+  const ACTION_URL = "https://docs.google.com/document/d/YOUR_GOOGLE_DOC_ID_HERE/edit?usp=sharing";
+  // HOW TO SET YOUR GOOGLE DOC TO VIEW-ONLY:
+  // 1. Open your Google Doc
+  // 2. Click "Share" in the top right
+  // 3. Under "General access", set to "Anyone with the link"
+  // 4. Make sure the dropdown next to it says "Viewer" (not Editor or Commenter)
+  // 5. Copy the link and paste it above, replacing YOUR_GOOGLE_DOC_ID_HERE
+</script>
+<!-- ============================================================ -->
+
+<div class="hero">
+  <p class="hero-label">Purge Palantir Campaign · FEC Data Analysis</p>
+  <h1>The Palantir <em>Payroll</em></h1>
+  <p class="hero-sub">Palantir executives and their corporate PAC have donated to politicians across both parties. Search below to find your representatives and see how much they received — then take action.</p>
+</div>
+
+<div class="stats-bar" id="stats-bar"></div>
+
+<div class="main">
+  <div class="search-section">
+    <p class="section-label">Find by zip code</p>
+    <div class="zip-row">
+      <input type="text" id="zip-input" placeholder="e.g. 10001" maxlength="5" oninput="this.value=this.value.replace(/\D/g,'')" onkeydown="if(event.key==='Enter')lookupZip()" />
+      <button class="filter-btn" onclick="lookupZip()">Look up my zip →</button>
+      <span class="zip-status" id="zip-status"></span>
+    </div>
+
+    <hr class="divider" />
+
+    <p class="section-label">Or search by name / state</p>
+    <div class="search-row">
+      <input type="text" id="search-input" placeholder="e.g. New York, NY, John Cornyn..." oninput="onSearchType()" />
+      <select id="party-filter" onchange="filterResults()">
+        <option value="all">All parties</option>
+        <option value="R">Republican</option>
+        <option value="D">Democrat</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setSort('amount',this)">Highest amount</button>
+    <button class="filter-btn" onclick="setSort('name',this)">A–Z</button>
+    <button class="filter-btn" onclick="setSort('returned',this)">Returned / pledged</button>
+  </div>
+
+  <div class="results-meta" id="results-count"></div>
+  <div id="results-list"></div>
+
+  <div class="source-note">
+    <strong>Source:</strong> Original analysis of Federal Election Commission (FEC) data by the Purge Palantir campaign. Totals reflect itemized contributions received by principal campaign committees, leadership PACs, and single-candidate super PACs. Analysis includes contributions from 2006 through May 6, 2026. The universe of donors consists of Palantir's corporate PAC and 15 individuals who have held senior leadership positions within Palantir and donated at least $20,000 to political campaigns.
+  </div>
+</div>
+
+<script>
+const DATA = [
+  {name:"Donald Trump",party:"R",state:"National",amount:2011600,returned:false},
+  {name:"John Cornyn",party:"R",state:"TX",amount:293801.14,returned:false},
+  {name:"Bill Cassidy",party:"R",state:"LA",amount:148500,returned:false},
+  {name:"Dan Sullivan",party:"R",state:"AK",amount:131600,returned:false},
+  {name:"Susan Collins",party:"R",state:"ME",amount:110000,returned:false},
+  {name:"Adam Smith",party:"D",state:"WA",amount:105051,returned:false},
+  {name:"Josh Riley",party:"D",state:"NY",amount:74951,returned:false},
+  {name:"Maggie Goodlander",party:"D",state:"NH",amount:40400,returned:false},
+  {name:"Lindsey Graham",party:"R",state:"SC",amount:39100,returned:false},
+  {name:"Pete Aguilar",party:"D",state:"CA",amount:38000,returned:false},
+  {name:"Roger Wicker",party:"R",state:"MS",amount:36285,returned:false},
+  {name:"Ruben Gallego",party:"D",state:"AZ",amount:35200,returned:false},
+  {name:"Mark Warner",party:"D",state:"VA",amount:33800,returned:false},
+  {name:"Patty Murray",party:"D",state:"WA",amount:32000,returned:false},
+  {name:"Martin Heinrich",party:"D",state:"NM",amount:31300,returned:false},
+  {name:"Rob Wittman",party:"R",state:"VA",amount:29302,returned:false},
+  {name:"Jacky Rosen",party:"D",state:"NV",amount:26500,returned:false},
+  {name:"Chris Coons",party:"D",state:"DE",amount:26500,returned:false},
+  {name:"Zach Nunn",party:"R",state:"IA",amount:26001,returned:false},
+  {name:"Jake Auchincloss",party:"D",state:"MA",amount:25100,returned:false},
+  {name:"Hakeem Jeffries",party:"D",state:"NY",amount:25000,returned:false},
+  {name:"Ken Calvert",party:"R",state:"CA",amount:24900,returned:false},
+  {name:"Ted Cruz",party:"R",state:"TX",amount:24600,returned:false},
+  {name:"John Barrasso",party:"R",state:"WY",amount:19084.99,returned:false},
+  {name:"Mike Johnson",party:"R",state:"LA",amount:19000,returned:false},
+  {name:"Adam Schiff",party:"D",state:"CA",amount:18450,returned:false},
+  {name:"Tom Emmer",party:"R",state:"MN",amount:18200,returned:false},
+  {name:"Joni Ernst",party:"R",state:"IA",amount:18200,returned:false},
+  {name:"Elise Stefanik",party:"R",state:"NY",amount:17400,returned:false},
+  {name:"Tom Cole",party:"R",state:"OK",amount:17000,returned:false},
+  {name:"Elissa Slotkin",party:"D",state:"MI",amount:16908.93,returned:false},
+  {name:"Mike Lawler",party:"R",state:"NY",amount:16900,returned:false},
+  {name:"John Fetterman",party:"D",state:"PA",amount:16600,returned:false},
+  {name:"John Thune",party:"R",state:"SD",amount:15100,returned:false},
+  {name:"Dick Durbin",party:"D",state:"IL",amount:14400,returned:false},
+  {name:"Maria Cantwell",party:"D",state:"WA",amount:14100,returned:false},
+  {name:"Jon Husted",party:"R",state:"OH",amount:14000,returned:false},
+  {name:"Josh Gottheimer",party:"D",state:"NJ",amount:13600,returned:false},
+  {name:"Sam Liccardo",party:"D",state:"CA",amount:13400,returned:false},
+  {name:"Richard Hudson",party:"R",state:"NC",amount:12300,returned:false},
+  {name:"Bill Hagerty",party:"R",state:"TN",amount:12000,returned:false},
+  {name:"Todd Young",party:"R",state:"IN",amount:12000,returned:false},
+  {name:"Tim Scott",party:"R",state:"SC",amount:12000,returned:false},
+  {name:"John Rutherford",party:"R",state:"FL",amount:12000,returned:false},
+  {name:"Bruce Westerman",party:"R",state:"AR",amount:12000,returned:false},
+  {name:"Lisa Murkowski",party:"R",state:"AK",amount:11600,returned:false},
+  {name:"Thom Tillis",party:"R",state:"NC",amount:11600,returned:false},
+  {name:"Richard Blumenthal",party:"D",state:"CT",amount:11600,returned:false},
+  {name:"Jon Ossoff",party:"D",state:"GA",amount:11550,returned:false},
+  {name:"Eric Schmitt",party:"R",state:"MO",amount:9500,returned:false},
+  {name:"Juan Ciscomani",party:"R",state:"AZ",amount:9000,returned:false},
+  {name:"Jake Ellzey",party:"R",state:"TX",amount:8300,returned:false},
+  {name:"Steve Womack",party:"R",state:"AR",amount:8300,returned:false},
+  {name:"Catherine Cortez Masto",party:"D",state:"NV",amount:8100,returned:false},
+  {name:"Lauren Underwood",party:"D",state:"IL",amount:7200.19,returned:false},
+  {name:"Michael McCaul",party:"R",state:"TX",amount:7100,returned:false},
+  {name:"Deb Fischer",party:"R",state:"NE",amount:7084.99,returned:false},
+  {name:"Derrick Van Orden",party:"R",state:"WI",amount:7000,returned:false},
+  {name:"Ashley Hinson",party:"R",state:"IA",amount:7000,returned:false},
+  {name:"Nick Begich",party:"R",state:"AK",amount:7000,returned:false},
+  {name:"Jen Kiggans",party:"R",state:"VA",amount:7000,returned:false},
+  {name:"Chuck Fleischmann",party:"R",state:"TN",amount:7000,returned:false},
+  {name:"Mike Lee",party:"R",state:"UT",amount:7000,returned:false},
+  {name:"Brian Jack",party:"R",state:"GA",amount:7000,returned:false},
+  {name:"Brian Fitzpatrick",party:"R",state:"PA",amount:6600,returned:false},
+  {name:"Gregory Meeks",party:"D",state:"NY",amount:6600,returned:false},
+  {name:"Debbie Wasserman Schultz",party:"D",state:"FL",amount:6600,returned:false},
+  {name:"Jim Himes",party:"D",state:"CT",amount:6500,returned:false},
+  {name:"Jared Golden",party:"D",state:"ME",amount:6200,returned:false},
+  {name:"Andy Kim",party:"D",state:"NJ",amount:6032.14,returned:false},
+  {name:"Steny Hoyer",party:"D",state:"MD",amount:6000,returned:false},
+  {name:"Gary Peters",party:"D",state:"MI",amount:5800,returned:false},
+  {name:"Steven Horsford",party:"D",state:"NV",amount:5000,returned:false},
+  {name:"Katie Britt",party:"R",state:"AL",amount:5000,returned:false},
+  {name:"Brian Schatz",party:"D",state:"HI",amount:5000,returned:false},
+  {name:"Tina Smith",party:"D",state:"MN",amount:4000,returned:false},
+  {name:"Angus King",party:"D",state:"ME",amount:4000,returned:false},
+  {name:"Chris Murphy",party:"D",state:"CT",amount:3300,returned:false},
+  {name:"Jay Obernolte",party:"R",state:"CA",amount:3300,returned:false},
+  {name:"Jim Justice",party:"R",state:"WV",amount:3300,returned:false},
+  {name:"Derek Tran",party:"D",state:"CA",amount:2700.20,returned:false},
+  {name:"Jerry Nadler",party:"D",state:"NY",amount:2500,returned:false},
+  {name:"Mike Turner",party:"R",state:"OH",amount:2500,returned:false},
+  {name:"Markwayne Mullin",party:"R",state:"OK",amount:2500,returned:false},
+  {name:"Darin LaHood",party:"R",state:"IL",amount:2500,returned:false},
+  {name:"George Whitesides",party:"D",state:"CA",amount:2200.20,returned:false},
+  {name:"Jim Banks",party:"R",state:"IN",amount:2099.99,returned:false},
+  {name:"Nancy Pelosi",party:"D",state:"CA",amount:2000,returned:false},
+  {name:"Alex Padilla",party:"D",state:"CA",amount:2000,returned:false},
+  {name:"Dan Newhouse",party:"R",state:"WA",amount:2000,returned:false},
+  {name:"Adam Gray",party:"D",state:"CA",amount:1700.20,returned:false},
+  {name:"Mikie Sherrill",party:"D",state:"NJ",amount:1629.77,returned:false},
+  {name:"Brittany Pettersen",party:"D",state:"CO",amount:1500,returned:false},
+  {name:"Kirsten Gillibrand",party:"D",state:"NY",amount:1500,returned:false},
+  {name:"Mark Kelly",party:"D",state:"AZ",amount:1023.60,returned:false},
+  {name:"George Latimer",party:"D",state:"NY",amount:1000,returned:false},
+  {name:"Wesley Bell",party:"D",state:"MO",amount:1000,returned:false},
+  {name:"Diana DeGette",party:"D",state:"CO",amount:833,returned:false},
+  {name:"Rick Scott",party:"R",state:"FL",amount:599.99,returned:false},
+  {name:"Marsha Blackburn",party:"R",state:"TN",amount:599.99,returned:false},
+  {name:"Kevin Cramer",party:"R",state:"ND",amount:599.99,returned:false},
+  {name:"Tim Sheehy",party:"R",state:"MT",amount:599.99,returned:false},
+  {name:"Josh Hawley",party:"R",state:"MO",amount:599.99,returned:false},
+  {name:"Eric Sorensen",party:"D",state:"IL",amount:523.60,returned:false},
+  {name:"Anthony Brown",party:"D",state:"MD",amount:500,returned:false},
+  {name:"Abigail Spanberger",party:"D",state:"VA",amount:500,returned:false},
+  {name:"Chris Pappas",party:"D",state:"NH",amount:500,returned:false},
+  {name:"Nikki Budzinski",party:"D",state:"IL",amount:500,returned:false},
+  {name:"Chrissy Houlahan",party:"D",state:"PA",amount:500,returned:false},
+  {name:"Marc Veasey",party:"D",state:"TX",amount:500,returned:false},
+  {name:"Donald Norcross",party:"D",state:"NJ",amount:500,returned:false},
+  {name:"Jimmy Panetta",party:"D",state:"CA",amount:500,returned:false},
+  {name:"Jeanne Shaheen",party:"D",state:"NH",amount:500,returned:false},
+  {name:"Jared Moskowitz",party:"D",state:"FL",amount:500,returned:false},
+  {name:"Gabe Vasquez",party:"D",state:"NM",amount:500,returned:false},
+  {name:"Gus Bilirakis",party:"R",state:"FL",amount:500,returned:false},
+  {name:"Cory Booker",party:"D",state:"NJ",amount:250,returned:false},
+  {name:"Jason Crow",party:"D",state:"CO",amount:0,returned:true},
+  {name:"Veronica Escobar",party:"D",state:"TX",amount:0,returned:true},
+  {name:"John Hickenlooper",party:"D",state:"CO",amount:0,returned:true},
+  {name:"Ro Khanna",party:"D",state:"CA",amount:0,returned:true},
+  {name:"Raja Krishnamoorthi",party:"D",state:"IL",amount:0,returned:true},
+  {name:"Mike Levin",party:"D",state:"CA",amount:0,returned:true},
+  {name:"Mallory McMorrow",party:"D",state:"MI",amount:0,returned:true},
+  {name:"Seth Moulton",party:"D",state:"MA",amount:0,returned:true},
+  {name:"Pat Ryan",party:"D",state:"NY",amount:0,returned:true},
+  {name:"Greg Stanton",party:"D",state:"AZ",amount:0,returned:true},
+  {name:"Suhas Subramanyam",party:"D",state:"VA",amount:0,returned:true},
+  {name:"Ritchie Torres",party:"D",state:"NY",amount:0,returned:true},
+];
+
+const STATE_MAP = {
+  "alabama":"AL","alaska":"AK","arizona":"AZ","arkansas":"AR","california":"CA",
+  "colorado":"CO","connecticut":"CT","delaware":"DE","florida":"FL","georgia":"GA",
+  "hawaii":"HI","idaho":"ID","illinois":"IL","indiana":"IN","iowa":"IA","kansas":"KS",
+  "kentucky":"KY","louisiana":"LA","maine":"ME","maryland":"MD","massachusetts":"MA",
+  "michigan":"MI","minnesota":"MN","mississippi":"MS","missouri":"MO","montana":"MT",
+  "nebraska":"NE","nevada":"NV","new hampshire":"NH","new jersey":"NJ","new mexico":"NM",
+  "new york":"NY","north carolina":"NC","north dakota":"ND","ohio":"OH","oklahoma":"OK",
+  "oregon":"OR","pennsylvania":"PA","rhode island":"RI","south carolina":"SC",
+  "south dakota":"SD","tennessee":"TN","texas":"TX","utah":"UT","vermont":"VT",
+  "virginia":"VA","washington":"WA","west virginia":"WV","wisconsin":"WI","wyoming":"WY"
+};
+
+let currentSort = 'amount';
+let activeState = null;
+
+function fmtAmt(n) {
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(2) + 'M';
+  if (n >= 1000) return '$' + Math.round(n/1000) + 'K';
+  return '$' + n.toLocaleString('en-US', {maximumFractionDigits:0});
+}
+
+function amtClass(n) {
+  if (n >= 50000) return 'high';
+  if (n >= 10000) return 'mid';
+  return 'low';
+}
+
+function resolveState(q) {
+  const l = q.toLowerCase().trim();
+  if (STATE_MAP[l]) return STATE_MAP[l];
+  if (l.length === 2) return l.toUpperCase();
+  return null;
+}
+
+async function lookupZip() {
+  const zip = document.getElementById('zip-input').value.trim();
+  const status = document.getElementById('zip-status');
+  if (zip.length !== 5) {
+    status.textContent = 'Please enter a 5-digit zip code.';
+    status.className = 'zip-status error';
+    return;
+  }
+  status.textContent = 'Looking up...';
+  status.className = 'zip-status';
+  try {
+    const res = await fetch('https://api.zippopotam.us/us/' + zip);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const st = data.places[0]['state abbreviation'];
+    const city = data.places[0]['place name'];
+    activeState = st;
+    document.getElementById('search-input').value = '';
+    status.textContent = city + ', ' + st + ' — showing your representatives';
+    status.className = 'zip-status found';
+    filterResults();
+  } catch(e) {
+    status.textContent = 'Zip not found. Try searching by state name instead.';
+    status.className = 'zip-status error';
+  }
+}
+
+function onSearchType() {
+  activeState = null;
+  document.getElementById('zip-input').value = '';
+  document.getElementById('zip-status').textContent = '';
+  document.getElementById('zip-status').className = 'zip-status';
+  filterResults();
+}
+
+function filterResults() {
+  const raw = document.getElementById('search-input').value.trim();
+  const party = document.getElementById('party-filter').value;
+  const stateFilter = activeState || resolveState(raw);
+
+  let results = DATA.filter(d => {
+    if (party !== 'all' && d.party !== party) return false;
+    if (currentSort === 'returned' && !d.returned) return false;
+    if (activeState) return d.state === activeState || d.state === 'National';
+    if (!raw) return true;
+    if (stateFilter) return d.state === stateFilter || d.state === 'National';
+    return d.name.toLowerCase().includes(raw.toLowerCase()) || d.state.toLowerCase().includes(raw.toLowerCase());
+  });
+
+  if (currentSort === 'name') results.sort((a,b) => a.name.localeCompare(b.name));
+  else results.sort((a,b) => b.amount - a.amount);
+
+  document.getElementById('results-count').textContent = results.length + ' politician' + (results.length !== 1 ? 's' : '') + ' found';
+
+  const list = document.getElementById('results-list');
+  if (!results.length) {
+    list.innerHTML = '<div class="empty">No results found.<br>Try a zip code, state abbreviation like "NY", or a name.</div>';
+    return;
+  }
+
+  list.innerHTML = results.map(d => {
+    const returnedBadge = d.returned ? '<span class="badge returned">Returned / pledged</span>' : '';
+    const right = d.returned
+      ? '<span class="card-returned-label">Donated &amp; returned</span>'
+      : '<span class="card-amount ' + amtClass(d.amount) + '">' + fmtAmt(d.amount) + '</span><a class="action-btn" href="' + ACTION_URL + '" target="_blank" rel="noopener">Take action →</a>';
+    return '<div class="card">' +
+      '<div class="card-info">' +
+        '<div class="card-name">' + d.name + '</div>' +
+        '<div class="card-meta">' +
+          '<span class="badge ' + d.party + '">' + (d.party==='R'?'Republican':'Democrat') + '</span>' +
+          '<span class="card-state">' + (d.state !== 'National' ? d.state : 'National') + '</span>' +
+          returnedBadge +
+        '</div>' +
+      '</div>' + right +
+    '</div>';
+  }).join('');
+}
+
+function setSort(type, btn) {
+  currentSort = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterResults();
+}
+
+function renderStats() {
+  const total = DATA.filter(d=>!d.returned&&d.amount>0).reduce((s,d)=>s+d.amount,0);
+  const rCount = DATA.filter(d=>d.returned).length;
+  const polCount = DATA.filter(d=>!d.returned&&d.amount>0).length;
+  const topAmt = Math.max(...DATA.map(d=>d.amount));
+  document.getElementById('stats-bar').innerHTML =
+    '<div class="stat-cell"><span class="stat-val danger">$' + (total/1000000).toFixed(1) + 'M</span><span class="stat-label">Total donations tracked</span></div>' +
+    '<div class="stat-cell"><span class="stat-val">' + polCount + '</span><span class="stat-label">Politicians funded</span></div>' +
+    '<div class="stat-cell"><span class="stat-val">' + rCount + '</span><span class="stat-label">Returned or pledged</span></div>' +
+    '<div class="stat-cell"><span class="stat-val">2006–2026</span><span class="stat-label">Data coverage</span></div>';
+}
+
+renderStats();
+filterResults();
+</script>
+</body>
+</html>
